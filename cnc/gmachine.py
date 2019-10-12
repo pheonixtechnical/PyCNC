@@ -125,12 +125,12 @@ class GMachine(object):
 
         logging.info("Moving linearly {}".format(delta))
 
-        self._X_direction_changed = (self._X_last_direction_positive & delta.x < 0) \
-                                    | ((not self._X_last_direction_positive) & delta.x >= 0)
-        self._Y_direction_changed = (self._Y_last_direction_positive & delta.y < 0) \
-                                    | ((not self._Y_last_direction_positive) & delta.x >= 0)
-        self._Z_direction_changed = (self._Z_last_direction_positive & delta.z < 0) \
-                                    | ((not self._Z_last_direction_positive) & delta.x >= 0)
+        self._X_direction_changed = (self._X_last_direction_positive & (delta.x < 0))\
+                                    | ((not self._X_last_direction_positive) & (delta.x >= 0))
+        self._Y_direction_changed = (self._Y_last_direction_positive & (delta.y < 0)) \
+                                    | ((not self._Y_last_direction_positive) & (delta.x >= 0))
+        self._Z_direction_changed = (self._Z_last_direction_positive & (delta.z < 0)) \
+                                    | ((not self._Z_last_direction_positive) & (delta.x >= 0))
 
         current_x_direction_is_positive = delta.x >= 0
         current_y_direction_is_positive = delta.y >= 0
@@ -140,7 +140,7 @@ class GMachine(object):
         self._Y_last_direction_positive = current_y_direction_is_positive
         self._Z_last_direction_positive = current_z_direction_is_positive
 
-        logging.debug("wanted to move X {} Y {} Z {}".format(delta.x, delta.y, delta.z))
+        print("wanted to move X {} Y {} Z {}".format(delta.x, delta.y, delta.z))
 
         if self._X_direction_changed:
             #                                       F   T If I was negative, but now going positive, go one more, If I was positive and now going negative, go one less
@@ -154,7 +154,7 @@ class GMachine(object):
             #                                       F   T If I was negative, but now going positive, go one more, If I was positive and now going negative, go one less
             delta.z = delta.z + (BACKLASH_COMP_Z * (-1, +1)[current_z_direction_is_positive])
 
-        logging.debug("actually going to move X {} Y {} Z {}".format(delta.x, delta.y, delta.z))
+        print("actually going to move X {} Y {} Z {}".format(delta.x, delta.y, delta.z))
 
         gen = PulseGeneratorLinear(delta, velocity)
         self.__check_velocity(gen.max_velocity())
