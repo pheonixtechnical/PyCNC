@@ -29,8 +29,12 @@ machine = GMachine()
 
 def do_line(line):
     try:
-        g = GCode.parse_line(line)
-        res = machine.do_command(g)
+        if 'G' in line and 'M' in line:
+            lines = line.split('M')
+            print("found %i" % len(lines))
+            for line in lines:
+                g = GCode.parse_line(line)
+                res = machine.do_command(g)
     except (GCodeException, GMachineException) as e:
         print('ERROR ' + str(e))
         return False
