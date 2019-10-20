@@ -5,7 +5,7 @@ def __init__(self):
     port = serial.serial("/dev/ttyS0", baudrate=115200, timeout=3.0)
 
 
-def enable_tank_vacuum(self):
+def enable_tank_vacuum():
     port.write("<TV>");
 
 
