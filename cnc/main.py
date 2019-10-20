@@ -4,6 +4,7 @@ import os
 import sys
 import readline
 import atexit
+import vacuum
 
 import cnc.logging_config as logging_config
 from cnc.gcode import GCode, GCodeException
@@ -69,6 +70,7 @@ def main():
     except KeyboardInterrupt:
         pass
     print("\r\nExiting...")
+    vacuum.close_port()
     machine.release()
 
 
