@@ -1,6 +1,6 @@
 import serial
 
-port = serial.serial("/dev/ttyS0", baudrate=115200, timeout=3.0)
+port = serial.Serial("/dev/ttyS0", baudrate=115200, timeout=3.0)
 
 
 def enable_tank_vacuum():
