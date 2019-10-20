@@ -21,3 +21,7 @@ def do_pick(param):
 
 def release_pick(param):
     port.write("<%iR>" % param)
+
+
+def clear_channel(param):
+    port.write("<%iC>" % param)

@@ -510,18 +510,26 @@ class GMachine(object):
             vacuum.do_pick(1)
         elif c == 'M211':  # release pick 1
             vacuum.release_pick(1)
+        elif c == 'M212':  # clear pick 4
+            vacuum.clear_channel(1)
         elif c == 'M220':  # vacuum pick 2
             vacuum.do_pick(2)
         elif c == 'M221':  # release pick 2
             vacuum.release_pick(2)
+        elif c == 'M222':  # clear pick 4
+            vacuum.clear_channel(2)
         elif c == 'M230':  # vacuum pick 3
             vacuum.do_pick(3)
         elif c == 'M231':  # release pick 3
             vacuum.release_pick(3)
+        elif c == 'M232':  # clear pick 4
+            vacuum.clear_channel(3)
         elif c == 'M240':  # vacuum pick 4
             vacuum.do_pick(4)
         elif c == 'M241':  # release pick 4
             vacuum.release_pick(4)
+        elif c == 'M242':  # clear pick 4
+            vacuum.clear_channel(4)
         elif c is None:  # command not specified(ie just F was passed)
             pass
         # commands below are added just for compatibility
