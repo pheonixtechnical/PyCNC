@@ -497,30 +497,30 @@ class GMachine(object):
             hal.join()
             p = self.position()
             answer = "X:{} Y:{} Z:{} E:{}".format(p.x, p.y, p.z, p.e)
-        elif c = 'M200':  # enable tank vacuum
+        elif c == 'M200':  # enable tank vacuum
             vacuum.enable_tank_vacuum()
             answer = "Enabled tank vacuum"
-        elif c = 'M201':  # run tank pump
+        elif c == 'M201':  # run tank pump
             vacuum.run_tank_pump()
             answer = "Running tank pump"
-        elif c = 'M202':  # disable tank pump
+        elif c == 'M202':  # disable tank pump
             vacuum.disable_tank_pump()
             answer = "Disabled tank pump"
-        elif c = 'M203':  # vacuum pick 1
+        elif c == 'M203':  # vacuum pick 1
             vacuum.do_pick(1)
-        elif c = 'M204':  # release pick 1
+        elif c == 'M204':  # release pick 1
             vacuum.release_pick(1)
-        elif c = 'M205':  # vacuum pick 2
+        elif c == 'M205':  # vacuum pick 2
             vacuum.do_pick(2)
-        elif c = 'M206':  # release pick 2
+        elif c == 'M206':  # release pick 2
             vacuum.release_pick(2)
-        elif c = 'M207':  # vacuum pick 3
+        elif c == 'M207':  # vacuum pick 3
             vacuum.do_pick(3)
-        elif c = 'M208':  # release pick 3
+        elif c == 'M208':  # release pick 3
             vacuum.release_pick(3)
-        elif c = 'M209':  # vacuum pick 4
+        elif c == 'M209':  # vacuum pick 4
             vacuum.do_pick(4)
-        elif c = 'M210':  # release pick 4
+        elif c == 'M210':  # release pick 4
             vacuum.release_pick(4)
         elif c is None:  # command not specified(ie just F was passed)
             pass
