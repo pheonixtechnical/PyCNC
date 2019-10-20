@@ -1,6 +1,7 @@
 from __future__ import division
 
 import cnc.logging_config as logging_config
+from cnc import vacuum
 from cnc.heater import *
 from cnc.pulses import *
 from cnc.watchdog import *
@@ -142,15 +143,15 @@ class GMachine(object):
 
         print("wanted to move X {} Y {} Z {}".format(delta.x, delta.y, delta.z))
 
-        if self._X_direction_changed:
+        if self._X_direction_changed & (delta.x > 0):
             #                                       F   T If I was negative, but now going positive, go one more, If I was positive and now going negative, go one less
             delta.x = delta.x + (BACKLASH_COMP_X * (-1, +1)[current_x_direction_is_positive])
 
-        if self._Y_direction_changed:
+        if self._Y_direction_changed & (delta.y > 0):
             #                                       F   T If I was negative, but now going positive, go one more, If I was positive and now going negative, go one less
             delta.y = delta.y + (BACKLASH_COMP_Y * (-1, +1)[current_y_direction_is_positive])
 
-        if self._Z_direction_changed:
+        if self._Z_direction_changed & (delta.z > 0):
             #                                       F   T If I was negative, but now going positive, go one more, If I was positive and now going negative, go one less
             delta.z = delta.z + (BACKLASH_COMP_Z * (-1, +1)[current_z_direction_is_positive])
 
@@ -496,6 +497,31 @@ class GMachine(object):
             hal.join()
             p = self.position()
             answer = "X:{} Y:{} Z:{} E:{}".format(p.x, p.y, p.z, p.e)
+        elif c = 'M200':  # enable tank vacuum
+            vacuum.enable_tank_vacuum()
+            answer = "Enabled tank vacuum"
+        elif c = 'M201':  # run tank pump
+            vacuum.run_tank_pump()
+            answer = "Running tank pump"
+        elif c = 'M202':  # disable tank pump
+            vacuum.disable_tank_pump()
+            answer = "Disabled tank pump"
+        elif c = 'M203':  # vacuum pick 1
+            vacuum.do_pick(1)
+        elif c = 'M204':  # release pick 1
+            vacuum.release_pick(1)
+        elif c = 'M205':  # vacuum pick 2
+            vacuum.do_pick(2)
+        elif c = 'M206':  # release pick 2
+            vacuum.release_pick(2)
+        elif c = 'M207':  # vacuum pick 3
+            vacuum.do_pick(3)
+        elif c = 'M208':  # release pick 3
+            vacuum.release_pick(3)
+        elif c = 'M209':  # vacuum pick 4
+            vacuum.do_pick(4)
+        elif c = 'M210':  # release pick 4
+            vacuum.release_pick(4)
         elif c is None:  # command not specified(ie just F was passed)
             pass
         # commands below are added just for compatibility
