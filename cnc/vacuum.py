@@ -16,8 +16,8 @@ def disable_tank_pump():
 
 
 def do_pick(param):
-    port.write("<" + param + "V>")
+    port.write("<%iV>" % param)
 
 
 def release_pick(param):
-    port.write("<" + param + "R>")
+    port.write("<%iR>" % param)
