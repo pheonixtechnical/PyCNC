@@ -506,21 +506,21 @@ class GMachine(object):
         elif c == 'M202':  # disable tank pump
             vacuum.disable_tank_pump()
             answer = "Disabled tank pump"
-        elif c == 'M203':  # vacuum pick 1
+        elif c == 'M210':  # vacuum pick 1
             vacuum.do_pick(1)
-        elif c == 'M204':  # release pick 1
+        elif c == 'M211':  # release pick 1
             vacuum.release_pick(1)
-        elif c == 'M205':  # vacuum pick 2
+        elif c == 'M220':  # vacuum pick 2
             vacuum.do_pick(2)
-        elif c == 'M206':  # release pick 2
+        elif c == 'M221':  # release pick 2
             vacuum.release_pick(2)
-        elif c == 'M207':  # vacuum pick 3
+        elif c == 'M230':  # vacuum pick 3
             vacuum.do_pick(3)
-        elif c == 'M208':  # release pick 3
+        elif c == 'M231':  # release pick 3
             vacuum.release_pick(3)
-        elif c == 'M209':  # vacuum pick 4
+        elif c == 'M240':  # vacuum pick 4
             vacuum.do_pick(4)
-        elif c == 'M210':  # release pick 4
+        elif c == 'M241':  # release pick 4
             vacuum.release_pick(4)
         elif c is None:  # command not specified(ie just F was passed)
             pass
