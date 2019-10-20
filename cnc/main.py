@@ -36,6 +36,9 @@ def do_line(line):
             for line in lines:
                 g = GCode.parse_line(line)
                 res = machine.do_command(g)
+        else:
+            g = GCode.parse_line(line)
+            res = machine.do_command(g)
     except (GCodeException, GMachineException) as e:
         print('ERROR ' + str(e))
         return False
