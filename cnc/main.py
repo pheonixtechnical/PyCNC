@@ -4,6 +4,7 @@ import os
 import sys
 import readline
 import atexit
+import vacuum
 
 import cnc.logging_config as logging_config
 from cnc.gcode import GCode, GCodeException
@@ -29,8 +30,15 @@ machine = GMachine()
 
 def do_line(line):
     try:
-        g = GCode.parse_line(line)
-        res = machine.do_command(g)
+        if 'G' in line and 'M' in line:
+            lines = line.split('M')
+            print("found %i" % len(lines))
+            for line in lines:
+                g = GCode.parse_line(line)
+                res = machine.do_command(g)
+        else:
+            g = GCode.parse_line(line)
+            res = machine.do_command(g)
     except (GCodeException, GMachineException) as e:
         print('ERROR ' + str(e))
         return False
@@ -65,6 +73,7 @@ def main():
     except KeyboardInterrupt:
         pass
     print("\r\nExiting...")
+    vacuum.close_port()
     machine.release()
 
 

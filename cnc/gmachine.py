@@ -1,11 +1,9 @@
 from __future__ import division
 
 import cnc.logging_config as logging_config
-from cnc import hal
-from cnc.pulses import *
-from cnc.coordinates import *
+from cnc import vacuum
 from cnc.heater import *
-from cnc.enums import *
+from cnc.pulses import *
 from cnc.watchdog import *
 
 
@@ -33,6 +31,12 @@ class GMachine(object):
         self._absoluteCoordinates = 0
         self._plane = None
         self._fan_state = False
+        self._X_direction_changed = False
+        self._X_last_direction_positive = False
+        self._Y_direction_changed = False
+        self._Y_last_direction_positive = False
+        self._Z_direction_changed = False
+        self._Z_last_direction_positive = False
         self._heaters = dict()
         self.reset()
         hal.init()
@@ -121,6 +125,38 @@ class GMachine(object):
         self.__check_delta(delta)
 
         logging.info("Moving linearly {}".format(delta))
+
+        self._X_direction_changed = (self._X_last_direction_positive & (delta.x < 0))\
+                                    | ((not self._X_last_direction_positive) & (delta.x >= 0))
+        self._Y_direction_changed = (self._Y_last_direction_positive & (delta.y < 0)) \
+                                    | ((not self._Y_last_direction_positive) & (delta.x >= 0))
+        self._Z_direction_changed = (self._Z_last_direction_positive & (delta.z < 0)) \
+                                    | ((not self._Z_last_direction_positive) & (delta.x >= 0))
+
+        current_x_direction_is_positive = delta.x >= 0
+        current_y_direction_is_positive = delta.y >= 0
+        current_z_direction_is_positive = delta.z >= 0
+
+        self._X_last_direction_positive = current_x_direction_is_positive
+        self._Y_last_direction_positive = current_y_direction_is_positive
+        self._Z_last_direction_positive = current_z_direction_is_positive
+
+        print("wanted to move X {} Y {} Z {}".format(delta.x, delta.y, delta.z))
+
+        # if self._X_direction_changed & (delta.x > 0):
+        #     #                                       F   T If I was negative, but now going positive, go one more, If I was positive and now going negative, go one less
+        #     delta.x = delta.x + (BACKLASH_COMP_X * (-1, +1)[current_x_direction_is_positive])
+        #
+        # if self._Y_direction_changed & (delta.y > 0):
+        #     #                                       F   T If I was negative, but now going positive, go one more, If I was positive and now going negative, go one less
+        #     delta.y = delta.y + (BACKLASH_COMP_Y * (-1, +1)[current_y_direction_is_positive])
+        #
+        # if self._Z_direction_changed & (delta.z > 0):
+        #     #                                       F   T If I was negative, but now going positive, go one more, If I was positive and now going negative, go one less
+        #     delta.z = delta.z + (BACKLASH_COMP_Z * (-1, +1)[current_z_direction_is_positive])
+        #
+        # print("actually going to move X {} Y {} Z {}".format(delta.x, delta.y, delta.z))
+
         gen = PulseGeneratorLinear(delta, velocity)
         self.__check_velocity(gen.max_velocity())
         hal.move(gen)
@@ -432,8 +468,8 @@ class GMachine(object):
                 raise GMachineException("temperature is not specified")
             t = gcode.get('S', 0)
             if ((heater == HEATER_EXTRUDER and t > EXTRUDER_MAX_TEMPERATURE) or
-                    (heater == HEATER_BED and t > BED_MAX_TEMPERATURE) or
-                    t < MIN_TEMPERATURE) and t != 0:
+                (heater == HEATER_BED and t > BED_MAX_TEMPERATURE) or
+                t < MIN_TEMPERATURE) and t != 0:
                 raise GMachineException("bad temperature")
             self._heat(heater, t, wait)
         elif c == 'M105':  # get temperature
@@ -461,6 +497,39 @@ class GMachine(object):
             hal.join()
             p = self.position()
             answer = "X:{} Y:{} Z:{} E:{}".format(p.x, p.y, p.z, p.e)
+        elif c == 'M200':  # enable tank vacuum
+            vacuum.enable_tank_vacuum()
+            answer = "Enabled tank vacuum"
+        elif c == 'M201':  # run tank pump
+            vacuum.run_tank_pump()
+            answer = "Running tank pump"
+        elif c == 'M202':  # disable tank pump
+            vacuum.disable_tank_pump()
+            answer = "Disabled tank pump"
+        elif c == 'M210':  # vacuum pick 1
+            vacuum.do_pick(1)
+        elif c == 'M211':  # release pick 1
+            vacuum.release_pick(1)
+        elif c == 'M212':  # clear pick 4
+            vacuum.clear_channel(1)
+        elif c == 'M220':  # vacuum pick 2
+            vacuum.do_pick(2)
+        elif c == 'M221':  # release pick 2
+            vacuum.release_pick(2)
+        elif c == 'M222':  # clear pick 4
+            vacuum.clear_channel(2)
+        elif c == 'M230':  # vacuum pick 3
+            vacuum.do_pick(3)
+        elif c == 'M231':  # release pick 3
+            vacuum.release_pick(3)
+        elif c == 'M232':  # clear pick 4
+            vacuum.clear_channel(3)
+        elif c == 'M240':  # vacuum pick 4
+            vacuum.do_pick(4)
+        elif c == 'M241':  # release pick 4
+            vacuum.release_pick(4)
+        elif c == 'M242':  # clear pick 4
+            vacuum.clear_channel(4)
         elif c is None:  # command not specified(ie just F was passed)
             pass
         # commands below are added just for compatibility
